@@ -1,6 +1,13 @@
 {% load menu %}
 
 <header class="header">
+  <span class="navbar-text">
+    {% if request.user.is_authenticated %}
+    Добро пожаловать, {{ user.username }} | <a href="{% url 'logout' %}">Выход</a>
+    {% else %}
+        <a href="{% url 'register' %}">Register</a> | <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+  </span>
   <div class="container">
     <div class="row">
       <div class="col-md-2">

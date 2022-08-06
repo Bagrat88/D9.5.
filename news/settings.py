@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'debug_toolbar',
     'ckeditor',
+    'django_apscheduler',
     'News_Portal.apps.NewsPortalConfig',
 ]
 
@@ -144,3 +145,21 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, 'django_cache'),
     }
 }
+
+EMAIL_HOST = ''
+EMAIL_PORT = 465 # 2525
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_ESE_TLS = False
+EMAIL_USE_SSL = True
+
+
+CELERY_BROKER_URL = 'redis://redis-15312.c281.us-east-1-2.ec2.cloud.redislabs.com:15312'
+CELERY_RESULT_BACKEND = 'redis://redis-15312.c281.us-east-1-2.ec2.cloud.redislabs.com:15312'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25
