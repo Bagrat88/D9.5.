@@ -2,6 +2,9 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.functions import datetime
 from django.urls import reverse
+import logging
+
+logger = logging.getLogger('django')
 
 
 class Category(models.Model):
@@ -91,10 +94,10 @@ class ProductOrder(models.Model):
     amount = models.IntegerField(default=1)
 
 
-class Appointment(models.Model):
-    date = models.DateField(default=datetime,)
-    client_name = models.CharField(max_length=200)
-    message = models.TextField()
-
-    def __str__(self):
-        return f'{self.client_name}: {self.message}'
+# class Appointment(models.Model):
+#     date = models.DateField(default=datetime,)
+#     client_name = models.CharField(max_length=200)
+#     message = models.TextField()
+#
+#     def __str__(self):
+#         return f'{self.client_name}: {self.message}'

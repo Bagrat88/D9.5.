@@ -1,16 +1,21 @@
+import logging
 import instance
 from django.db.models.functions import datetime
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, TemplateView
+from django.views.generic.edit import FormMixin
 
-from .forms import UserRegisterForm, UserLoginForm, ContactForm
-from .models import Post, Category, Tag, Order, Appointment
+from .forms import UserRegisterForm, UserLoginForm, ContactForm, CommentForm
+from .models import Post, Category, Tag, Order
 from django.db.models import F
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.core.mail import send_mail
 
+logger = logging.getLogger('django')
 
 
 class Home(ListView):
@@ -55,10 +60,31 @@ class PostsByTag(ListView):
         return context
 
 
-class GetPost(DetailView):
+class CustomSuccessMessageMixin:
+    def __init__(self):
+        self.request = None
+
+    @property
+    def success_msg(self):
+        return False
+
+    def form_valid(self, form):
+        messages.success(self.request, self.success_msg)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return '%s?id=%s' % (self.success_url, self.object.id)
+
+
+class GetPost(CustomSuccessMessageMixin, FormMixin, DetailView):
     model = Post
     template_name = 'News_Portal/single.html'
     context_object_name = 'post'
+    form_class = CommentForm
+    success_msg = 'Комментарий успешно создана,.ожидайте модерации'
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('post')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -66,6 +92,21 @@ class GetPost(DetailView):
         self.object.save()
         self.object.refresh_from_db()
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return redirect('home')
+        else:
+            messages.error(request, 'Ошибка Комментарий')
+        return render(request, 'News_Portal/single.html', {"form": form})
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.article = self.get_object()
+        self.object.author = self.request.user
+        self.object.save()
+        return super().form_valid(form)
 
 
 class Search(ListView):
@@ -159,17 +200,23 @@ class NewOrderView(CreateView):
         return redirect('/')
 
 
+def edit_page(request):
+    template = 'edit_page.html'
+    context = {
 
-class AppointmentView(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'make_appointment.html', {})
+    }
+    return render(request, template, context)
 
-    def post(self, request, *args, **kwargs):
-        appointment = Appointment(
-            date=datetime.strptime(request.POST['date'], '%Y-%m-%d'),
-            client_name=request.POST['client_name'],
-            messages=request.POST['message'],
-        )
-        appointment.save()
 
-        return redirect('appointments.mke_appointment')
+# class AppointmentView(View):
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'make_appointment.html', {})
+#
+#     def post(self, request, *args, **kwargs):
+#         appointment = Appointment(
+#             date=datetime.strptime(request.POST['date'], '%Y-%m-%d'),
+#             client_name=request.POST['client_name'],
+#             messages=request.POST['message'],
+#         )
+#         appointment.save()
+        # return redirect('appointments.mke_appointment')

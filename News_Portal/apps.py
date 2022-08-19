@@ -14,8 +14,8 @@ red = redis.Redis(
 )
 
 
-class AppointmentConfig(AppConfig):
-   name = 'News_Portal'
-
-   def ready(self):
-       import News_Portal.signals
+# class AppointmentConfig(AppConfig):
+#    name = 'News_Portal'
+#
+#    def ready(self):
+#        import News_Portal.signals

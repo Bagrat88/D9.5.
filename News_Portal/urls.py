@@ -1,4 +1,6 @@
 from django.urls import path
+
+from . import views
 from .views import *
 
 
@@ -14,5 +16,6 @@ urlpatterns = [
     path('search/', Search.as_view(), name='search'),
     path('', IndexView.as_view()),
     path('new/', NewOrderView.as_view(), name='new_order'),
-    path('take/<int:oid>', test, name = 'take_order')
+    path('take/<int:oid>', test, name='take_order'),
+    path('edit-page/', views.edit_page, name='edit-page'),
 ]

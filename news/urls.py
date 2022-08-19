@@ -17,13 +17,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+import logging
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('', include('News_Portal.urls')),
-    path('appointments/', include(('appointment.urls', 'appointments'), namespace='appointments')),
-    path('accounts/', include('allauth.urls')),
+    # path('appointments/', include(('appointment.urls', 'appointments'), namespace='appointments')),
+    # path('accounts/', include('allauth.urls')),
 ]
 
 if settings.DEBUG:
@@ -32,3 +33,10 @@ if settings.DEBUG:
         path('__debug__/', include(debug_toolbar.urls))
     ] + urlpatterns
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+logger_dr = logging.getLogger('django.request')
+logger_cn = logging.getLogger('django')
+
+logger_dr.error("Hello! I'm an error in your app. Enjoy:)")
+logger_cn.error("Hello! I'm another error in your app. Enjoy:)")
